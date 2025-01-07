@@ -1,7 +1,8 @@
 import { config } from "../config/config.js";
 import { PACKET_TYPE } from "../constants/header.js";
 import { getHandlerById } from "../handlers/index.js";
-import { getUserById } from "../session/user.session.js";
+import { getProtoMessages } from "../init/loadProtos.js";
+import { getUserById, getUserBySocket } from "../session/user.session.js";
 import CustomError from "../utils/error/customError.js";
 import { ErrorCodes } from "../utils/error/errorCodes.js";
 import { handlerError } from "../utils/error/errorHandler.js";
@@ -27,9 +28,18 @@ export const onData = (socket) => async (data) => {
 
         try {
             switch (packetType) {
-                case PACKET_TYPE.PING:
+                case PACKET_TYPE.PING: {
+                    const protoMessages = getProtoMessages();
+                    const Ping = protoMessages.common.Ping;
+                    const pingMessage = Ping.decode(packet);
+
+                    const user = getUserBySocket(socket);
+                    if (!user) throw new CustomError(ErrorCodes.USER_NOT_FOUND, "User not found");
+
+                    user.handlePong(pingMessage)
                     break;
-                case PACKET_TYPE.NORMAL:
+                }
+                case PACKET_TYPE.NORMAL: {
                     const { handlerId, userId, payload, sequence } = packetParser(packet);
 
                     const user = getUserById(userId);
@@ -40,15 +50,25 @@ export const onData = (socket) => async (data) => {
                     await handler({ socket, userId, payload, sequence });
 
                     break;
+                }
+                case PACKET_TYPE.LOCATION: {
+                    const { handlerId, userId, payload, sequence } = packetParser(packet);
+
+                    const user = getUserById(userId);
+                    if (!user) throw new CustomError(ErrorCodes.USER_NOT_FOUND, "User not found");
+
+                    const handler = getHandlerById(handlerId);
+
+                    await handler({ socket, userId, payload, sequence });
+
+                    break;
+                }
                 default:
                     console.log('알 수 없는 패킷');
                     break;
             }
-        } catch (err) {
-            handlerError(socket, err);
+        } catch (e) {
+            handlerError(e, socket);
         }
-
-
-        console.log(`수신 ${packet.toString()}`);
     }
 }

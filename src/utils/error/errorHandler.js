@@ -1,7 +1,7 @@
 import { createResponse } from "../response/createResponse.js";
 import { ErrorCodes } from "./errorCodes.js";
 
-export const handlerError = (socket, error) => {
+export const handlerError = (error, socket) => {
     console.error(error);
 
     let responseCode;

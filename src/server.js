@@ -6,7 +6,6 @@ import { onConnection } from './events/onConnection.js';
 const server = net.createServer(onConnection);
 
 initServer().then(() => {
-    console.log(config)
     server.listen(config.server.port, config.server.host, () => {
         console.log(server.address());
     });

@@ -4,7 +4,7 @@ import { getProtoMessages } from "../../init/loadProtos.js";
 import { getNextSequence } from "../../session/user.session.js";
 
 export const createResponse = (handlerId, responseCode, data = null, userId) => {
-    const protoMessages = getProtoMessages();
+    const protoMessages = getProtoMessages(); 
     const Response = protoMessages.response.Response;
 
     const responsePayload = {

@@ -6,9 +6,9 @@ const TOTAL_LENGTH = 4; // 전체 길이를 나타내는 4바이트
 const PACKET_TYPE_LENGTH = 1; // 패킷타입을 나타내는 1바이트
 
 let userId;
-let gameId;
+let gameId = '5a948885-fff2-4749-a3b5-9b58396fa545';
 let sequence = 0;
-const deviceId = 'xxxx1x';
+const deviceId = 'xxxxx';
 let x = 0.0;
 let y = 0.0;
 
@@ -44,7 +44,7 @@ const sendPacket = async (socket, packet) => {
 
     // 패킷 길이 정보를 포함한 버퍼 생성
     const packetLength = Buffer.alloc(TOTAL_LENGTH);
-    packetLength.writeUInt32BE(buffer.length + TOTAL_LENGTH + PACKET_TYPE_LENGTH, 0); // 패킷 길이에 타입 바이트 포함
+    packetLength.writeUInt32BE(buffer.length + TOTAL_LENGTH + PACKET_TYPE_LENGTH, 0);
 
     // 패킷 타입 정보를 포함한 버퍼 생성
     const packetType = Buffer.alloc(PACKET_TYPE_LENGTH);
@@ -67,7 +67,7 @@ const sendPong = (socket, timestamp) => {
     packetLength.writeUInt32BE(pongBuffer.length + TOTAL_LENGTH + PACKET_TYPE_LENGTH, 0);
 
     // 패킷 타입 정보를 포함한 버퍼 생성
-    const packetType = Buffer.alloc(1);
+    const packetType = Buffer.alloc(PACKET_TYPE_LENGTH);
     packetType.writeUInt8(0, 0);
 
     // 길이 정보와 메시지를 함께 전송
@@ -101,7 +101,7 @@ const sendLocation = async (socket, packet) => {
 };
 
 const updateLocation = (socket) => {
-    x += 0.1;
+    x += 0.3;
     const packet = createPacket(6306, { gameId, x, y }, '1.0.0', 'game', 'LocationUpdatePayload');
 
     sendLocation(socket, packet);
@@ -125,23 +125,23 @@ client.connect(PORT, HOST, async () => {
     await delay(500);
 
     const createGamePacket = createPacket(
-        462,
-        { timestamp: Date.now() },
+        325,
+        { timestamp: Date.now(), gameId },
         '1.0.0',
         'game',
-        'CreateGamePayload',
+        'JoinGamePayload',
     );
 
     await sendPacket(client, createGamePacket);
 });
 
-client.on('data', (data) => {
+client.on('data', async (data) => {
     // 1. 길이 정보 수신 (4바이트)
     const length = data.readUInt32BE(0);
     const totalHeaderLength = TOTAL_LENGTH + PACKET_TYPE_LENGTH;
     // 2. 패킷 타입 정보 수신 (1바이트)
     const packetType = data.readUInt8(4);
-    const packet = data.subarray(totalHeaderLength, totalHeaderLength + length); // 패킷 데이터
+    const packet = data.slice(totalHeaderLength, totalHeaderLength + length); // 패킷 데이터
     const protoMessages = getProtoMessages();
 
     if (packetType === 1) {
@@ -168,7 +168,8 @@ client.on('data', (data) => {
                 pingMessage.timestamp.unsigned,
             );
             // console.log('Received ping with timestamp:', timestampLong.toNumber());
-            sendPong(client, timestampLong.toNumber());
+            await delay(1500);
+            await sendPong(client, timestampLong.toNumber());
         } catch (pongError) {
             console.error('Ping 처리 중 오류 발생:', pongError);
         }
@@ -185,7 +186,7 @@ client.on('data', (data) => {
             // 위치 업데이트 패킷 전송
             setInterval(() => {
                 updateLocation(client);
-            }, 1000);
+            }, 1500);
         } catch (error) {
             console.error(error);
         }

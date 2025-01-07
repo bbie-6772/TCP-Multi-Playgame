@@ -4,7 +4,7 @@ import { handlerError } from "../utils/error/errorHandler.js"
 
 export const onError = (socket) => (err) => {
     
-    handlerError(socket, new CustomError(500, `Socket Error : ${err}`));
+    handlerError(new CustomError(500, `Socket Error : ${err}`), socket);
     
     // 세션에서 유저 삭제
     removeUser(socket);

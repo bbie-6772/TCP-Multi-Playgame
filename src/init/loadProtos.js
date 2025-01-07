@@ -4,11 +4,8 @@ import { fileURLToPath } from 'url';
 import protobuf from 'protobufjs'
 import { packetNames } from '../protobuf/packetNames.js';
 
-//현재 파일의 절대경로 찾기
 const __filename = fileURLToPath(import.meta.url);
-//디렉토리 경로(현재 파일위치) 추출
 const __dirname = path.dirname(__filename);
-// 현재 파일위치 기준으로 assets 폴더 찾기(../../ => 최상위 폴더로 이동)
 const protoDir = path.join(__dirname, '../protobuf');
 
 const getAllProtoFiles = (dir, fileList = []) => {
