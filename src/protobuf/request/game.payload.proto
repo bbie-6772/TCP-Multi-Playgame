@@ -1,0 +1,17 @@
+syntax = 'proto3';
+
+package gamePayload;
+
+message CreateGame {
+    int64 timestamp = 1;
+}
+
+message JoinGame {
+    string gameId = 1;
+    int64 timestamp = 2;
+}
+
+message LocationUpdate {
+    float x = 1;
+    float y = 2;
+}

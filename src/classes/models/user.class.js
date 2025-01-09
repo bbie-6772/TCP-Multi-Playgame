@@ -1,0 +1,14 @@
+class User {
+    constructor(id, socket) {
+        this.id = id;
+        this.socket = socket;
+        this.x = 0;
+        this.y = 0;
+        this.latency = 0;
+        this.sequence = 0;
+        this.lastUpdateTime = Date.now();
+    }
+
+    
+
+}

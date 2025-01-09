@@ -1,0 +1,11 @@
+syntax = 'proto3';
+
+package response;
+
+message Packet {
+    uint32 handlerId = 1;
+    uint32 responseCode = 2;
+    int64 timestamp = 3;
+    uint32 sequence = 4;
+    bytes data = 5;
+}  
