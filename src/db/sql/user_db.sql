@@ -1,3 +1,4 @@
+-- users 테이블이 없을 경우 초기화 설정 
 CREATE TABLE IF NOT EXISTS users 
 (
     id VARCHAR(36) PRIMARY KEY, 
@@ -6,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- game_end 테이블이 없을 경우 초기화 설정 
 CREATE TABLE IF NOT EXISTS game_end
 (
     id VARCHAR(36) PRIMARY KEY, 
