@@ -1,8 +1,8 @@
 import User from "../classes/models/user.class.js";
 import { users, socketToUser } from "./session.js";
 
-export const addUser = (deviceId, socket) => {
-    const user = new User(deviceId, socket)
+export const addUser = (deviceId, socket, latency) => {
+    const user = new User(deviceId, socket, latency)
     users.set(deviceId, user)
     socketToUser.set(socket.id, deviceId)
 }
