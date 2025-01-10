@@ -1,4 +1,5 @@
 import { config } from "../../config/config.js"
+import { packetNames } from "../../protobuf/packetNames.js"
 import { addUser, getUser } from "../../session/user.session.js"
 import { createResponse } from "../../utils/response/createResponse.js"
 
@@ -12,6 +13,17 @@ export const initialHandler = async ({socket, payload}) => {
     // 없을 시 추가
     else addUser(userId, socket, latency)
 
-    const response = createResponse(config.handler.id.INITIAL, config.handler.responseCode, null)
+    const response = createResponse({
+        handlerId: config.handler.id.INITIAL, 
+        responseCode: config.handler.responseCode, 
+        data: {
+            userId,
+            x: 1,
+            y: 1
+        }, 
+        protoType: packetNames.initialResponse.Packet,
+        userId
+        }
+    )
     socket.write(response)
 }

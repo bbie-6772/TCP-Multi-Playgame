@@ -6,7 +6,7 @@ import { ErrorCodes } from "../error/errorCodes.js";
 
 export const packetParser = (data) => {
     const protoMessages = getProtoMessages();
-    const Packet = protoMessages.common.Packet;
+    const Packet = protoMessages.request.Packet;
     let Payload;
     let packet;
 

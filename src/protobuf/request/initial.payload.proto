@@ -1,6 +1,6 @@
 syntax = 'proto3';
 
-package initial;
+package initialRequest;
 
 message Packet {
     string deviceId = 1;

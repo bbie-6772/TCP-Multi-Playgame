@@ -1,3 +1,4 @@
+import { packetNames } from "../../protobuf/packetNames.js";
 import { createResponse } from "../response/createResponse.js";
 import { ErrorCodes } from "./errorCodes.js";
 
@@ -16,6 +17,11 @@ export const errorHandler = (socket, error) => {
         console.error("예상치 못한 오류", message)
     }
 
-    const errorResponse = createResponse(-1, responseCode, {message})
+    const errorResponse = createResponse({
+        handlerId: -1, 
+        responseCode, 
+        data: {message},
+        protoType: packetNames.error.Error
+    })
     socket.write(errorResponse)
 }

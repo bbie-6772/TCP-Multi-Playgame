@@ -5,9 +5,9 @@ import { ErrorCodes } from "../utils/error/errorCodes.js";
 import { initialHandler } from "./user/initial.handler.js";
 
 export const handlers = {
-    [config.handler.INITIAL]: {
+    [config.handler.id.INITIAL]: {
         handler: initialHandler,
-        protoType: packetNames.initial.Packet
+        protoType: packetNames.initialRequest.Packet
     },
 }
 

@@ -3,11 +3,17 @@ export const packetNames = {
         Packet: 'request.Packet',
         Ping: 'request.Ping'
     },
-    initial: {
-        Packet: 'initial.Packet'
+    initialRequest: {
+        Packet: 'initialRequest.Packet'
     },
     response: {
-        Packet: 'response.Packet'
+        Packet: 'response.Packet',
+    },
+    error: {
+        Error: 'error.Error'
+    },
+    initialResponse: {
+        Packet: 'initialResponse.Packet'
     },
     gamePayload: {
         CreateGame: 'gamePayload.CreateGame',
