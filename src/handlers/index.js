@@ -1,11 +1,11 @@
-import { HANDLER_IDS } from "../config/constants/handler.js";
+import { config } from "../config/config.js";
 import { packetNames } from "../protobuf/packetNames.js";
 import CustomError from "../utils/error/customError.js";
 import { ErrorCodes } from "../utils/error/errorCodes.js";
 import { initialHandler } from "./user/initial.handler.js";
 
 export const handlers = {
-    [HANDLER_IDS.INITIAL]: {
+    [config.handler.INITIAL]: {
         handler: initialHandler,
         protoType: packetNames.initial.Packet
     },
