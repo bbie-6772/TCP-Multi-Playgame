@@ -18,8 +18,8 @@ export const initialHandler = async ({socket, payload}) => {
         responseCode: config.handler.responseCode, 
         data: {
             userId,
-            x: 1,
-            y: 1
+            x: 0,
+            y: 0
         }, 
         protoType: packetNames.initialResponse.Packet,
         userId
