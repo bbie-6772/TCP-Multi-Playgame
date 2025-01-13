@@ -1,17 +1,17 @@
 import { config } from "../../config/config.js";
 import { PACKAGE_TYPE } from "../../config/constants/header.js";
 import { getProtoMessages } from "../../init/loadProtobuf.js"
-import { getUser } from "../../session/user.session.js";
+import { users } from "../../session.js";
 import CustomError from "../error/customError.js";
 import { ErrorCodes } from "../error/errorCodes.js";
 
 export const createResponse = ({handlerId, responseCode, data = null, protoType = null, userId}) => {
     const protoMessages = getProtoMessages();
     const Response = protoMessages.response.Packet
-    const user = getUser({userId})
+    const user = users.getUser({userId})
 
     try{
-        if(data) {
+        if (data) {
             const [namespace, typeName] = protoType.split('.');
             const Payload = protoMessages[namespace][typeName];
             data = Payload.encode(data).finish();
