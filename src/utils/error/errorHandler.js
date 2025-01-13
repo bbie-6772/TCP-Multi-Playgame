@@ -14,7 +14,7 @@ export const errorHandler = (socket, error) => {
     } else {
         responseCode = ErrorCodes.SOCKET_ERROR;
         message = error.message;
-        console.error("예상치 못한 오류", message)
+        console.error("예상치 못한 오류", message, error.stack)
     }
 
     const errorResponse = createResponse({
