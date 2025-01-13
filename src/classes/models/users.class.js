@@ -12,17 +12,16 @@ class Users {
         socketToUser.set(socket.id, deviceId)
     }
 
-    removeUser = ({ userId, socketId }) => {
-        if (socketId) {
-            userId = socketToUser.get(socketId)
-            socketToUser.delete(socketId)
+    removeUser = ({ userId, socket }) => {
+        if (socket) {
+            userId = this.socketToUser.get(socket)
+            this.socketToUser.delete(socket)
         }
-        users.delete(userId)
-    }
+        // 참여한 게임이 있을 시 확인해서 삭제
+        const user = this.users.get(userId)
+        if (user.gameId) games.games.get(user.gameId).removeUser(userId)
 
-    getUser = ({ userId, socketId }) => {
-        if (socketId) userId = socketToUser.get(socketId)
-        return users.get(userId)
+        this.users.delete(userId)
     }
 
 }

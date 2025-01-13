@@ -7,6 +7,7 @@ class User {
         this.latency = latency;
         this.sequence = 0;
         this.lastUpdateTime = Date.now();
+        this.gameId = null;
     }      
 
     updatePosition(x, y) {

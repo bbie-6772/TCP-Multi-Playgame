@@ -8,6 +8,7 @@ class Game {
     }
     
     addUser(user) {
+        user.updateGameId(this.id)
         this.users.set(user.id, user)
     }
 
