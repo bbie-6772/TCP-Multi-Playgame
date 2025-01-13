@@ -1,15 +1,17 @@
+import { games } from "../../session.js";
 import User from "./user.class.js";
 
 class Users {
     constructor() {
         this.users = new Map();
+        // 유저 추가 시 socketId를 이용해 userId 를 찾기 위한 Map 객체
         this.socketToUser = new Map();
     }
 
     addUser = (deviceId, socket, latency) => {
         const user = new User(deviceId, socket, latency)
-        users.set(deviceId, user)
-        socketToUser.set(socket.id, deviceId)
+        this.users.set(deviceId, user)
+        this.socketToUser.set(socket, deviceId)
     }
 
     removeUser = ({ userId, socket }) => {
@@ -24,6 +26,10 @@ class Users {
         this.users.delete(userId)
     }
 
+    getUser = ({ userId, socket }) => {
+        if (socket) userId = this.socketToUser.get(socket)
+        return this.users.get(userId)
+    }
 }
 
 export default Users

@@ -1,6 +1,6 @@
 syntax = 'proto3';
 
-package request;
+package common;
 
 message Packet {
     uint32 handlerId = 1;

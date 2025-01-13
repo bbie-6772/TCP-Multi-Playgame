@@ -1,6 +1,10 @@
 import { config } from "../config/config.js";
 import { PACKAGE_TYPE } from "../config/constants/header.js";
 import { handlers } from "../handlers/index.js";
+import { getProtoMessages } from "../init/loadProtobuf.js";
+import { users } from "../session.js";
+import CustomError from "../utils/error/customError.js";
+import { ErrorCodes } from "../utils/error/errorCodes.js";
 import { errorHandler } from "../utils/error/errorHandler.js";
 import { packetParser } from "../utils/parser/packetParser.js";
 
@@ -23,6 +27,14 @@ export const onData = (socket) => async (data) => {
         try {
             switch (packetType) {
                 case PACKAGE_TYPE.PING: {
+                    const protoMessage = getProtoMessages();
+                    const Ping = protoMessage.common.Ping
+                    const timestamp = Ping.decode(packet)
+
+                    const user = users.getUser({socket})
+                    if (!user) throw new CustomError(ErrorCodes.USER_NOT_FOUND, "User not found");
+
+                    user.pong(timestamp)
                     break;
                 }
                 case PACKAGE_TYPE.NORMAL: {

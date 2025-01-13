@@ -1,3 +1,5 @@
+import { createPing } from "../../utils/notification/createNotification.js";
+
 class User {
     constructor(id, socket, latency) {
         this.id = id;
@@ -21,13 +23,27 @@ class User {
         this.lastUpdateTime = Date.now();
     }
 
-    updateLatency(latency) {
-        this.latency = latency;
-    }
-
     getNextSequence() {
         return ++this.sequence;
     }
+
+    updateGameId(gameId) {
+        this.gameId = gameId
+    }
+
+    ping = () => {
+        // 패킷을 보내는 시간을 Payload 로 클라이언트에게 수신
+        const pingPacket = createPing()
+        this.socket.write(pingPacket)
+    }
+
+    pong ({timestamp}) {
+        const now = Date.now()
+        // 현재 시간과 받아온 시간으로 지연시간 계산
+        this.latency = (now - timestamp) / 2;
+        console.log(this.latency)
+    }
+
 }
 
 export default User
