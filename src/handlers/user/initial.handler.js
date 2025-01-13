@@ -2,6 +2,7 @@ import { config } from "../../config/config.js"
 import { packetNames } from "../../protobuf/packetNames.js"
 import { users } from "../../session.js"
 import { createResponse } from "../../utils/response/createResponse.js"
+import { joinGameHandler } from "../game/game.handler.js"
 
 export const initialHandler = async ({socket, payload}) => {
     const { deviceId: userId, latency} = payload
@@ -25,5 +26,9 @@ export const initialHandler = async ({socket, payload}) => {
         userId
         }
     )
+
     socket.write(response)
+
+    // 서버에 게임이 1개이므로 바로 참여
+    joinGameHandler({ socket, userId, payload })
 }
