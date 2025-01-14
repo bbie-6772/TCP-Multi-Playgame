@@ -10,9 +10,10 @@ class Game {
     }
     
     addUser(user) {
-        user.updateGameId(this.id)
+        user.updateGame(this.id, this.users.size)
         this.users.set(user.id, user)
-        this.intervals.addPlayer(user.id, user.ping, 200)
+        this.intervals.addInterval(user.id, user.ping, 200)
+        this.intervals.addInterval(user.id, user.updateAllLocation, 200, "location")
     }
 
     removeUser(userId){
@@ -29,10 +30,19 @@ class Game {
         this.users.reduce((max, user) => user.latency > max ? user.latency : max )
     }
 
-    getAllLocation () {
-        this.users.forEach((user) => {
-
+    getAllLocation (playerId) {
+        // 게임 내 전체 유저 위치 확인
+        const payload = Array.from(this.users).map(([id, user]) => {
+            {
+                return {
+                    id: user.id,
+                    playerId: user.playerId,
+                    x: user.x,
+                    y: user.y,
+                }
+            }
         })
+        return { users: payload }
     }
 }
 

@@ -1,4 +1,5 @@
-import { createPing } from "../../utils/notification/createNotification.js";
+import { games } from "../../session.js";
+import { createLocation, createPing } from "../../utils/notification/createNotification.js";
 
 class User {
     constructor(id, socket, latency) {
@@ -10,7 +11,12 @@ class User {
         this.sequence = 0;
         this.lastUpdateTime = Date.now();
         this.gameId = null;
+        this.playerId = null;
     }      
+
+    getNextSequence() {
+        return ++this.sequence;
+    }
 
     updatePosition(x, y) {
         this.x = x;
@@ -23,12 +29,14 @@ class User {
         this.lastUpdateTime = Date.now();
     }
 
-    getNextSequence() {
-        return ++this.sequence;
+    updateGame(gameId, playerId) {
+        this.gameId = gameId;
+        this.playerId = playerId;
     }
 
-    updateGameId(gameId) {
-        this.gameId = gameId
+    // 추측항법 시 사용
+    calculatePosition(latency) {
+        const timeDiff = latency /1000;
     }
 
     ping = () => {
@@ -41,7 +49,13 @@ class User {
         const now = Date.now()
         // 현재 시간과 받아온 시간으로 지연시간 계산
         this.latency = (now - timestamp) / 2;
-        console.log(this.latency)
+    }
+
+    updateAllLocation = () => {
+        const game = games.games.get(this.gameId)
+        const payload = game.getAllLocation(this.playerId)
+
+        this.socket.write(createLocation(payload))
     }
 
 }

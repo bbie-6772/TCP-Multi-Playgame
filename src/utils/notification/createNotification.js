@@ -3,7 +3,6 @@ import { PACKAGE_TYPE } from "../../config/constants/header.js";
 import { getProtoMessages } from "../../init/loadProtobuf.js";
 
 const addHeader = (payload, type) => {
-    
     const packetLength = Buffer.alloc(config.packet.totalLength)
     packetLength.writeUInt32BE(payload.length + config.packet.totalLength + config.packet.typeLength, 0)
 
@@ -13,7 +12,7 @@ const addHeader = (payload, type) => {
     return Buffer.concat([packetLength, packetType, payload])
 }
 
-export const createPing = () => {
+export const createPing = () => {    
     const protoMessages = getProtoMessages()
     const Ping = protoMessages.common.Ping
 
@@ -21,4 +20,13 @@ export const createPing = () => {
     const buffer = Ping.encode(now).finish();
 
     return addHeader(buffer, PACKAGE_TYPE.PING)
+}
+
+export const createLocation = (payload) => {
+    const protoMessages = getProtoMessages()
+    const LocationUpdate = protoMessages.gameNotification.LocationUpdate
+
+    const buffer = LocationUpdate.encode(payload).finish();
+
+    return addHeader(buffer, PACKAGE_TYPE.LOCATION);
 }

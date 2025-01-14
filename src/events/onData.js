@@ -10,8 +10,6 @@ import { packetParser } from "../utils/parser/packetParser.js";
 
 
 export const onData = (socket) => async (data) => {
-    console.log("데이터 수신")
-
     socket.buffer = Buffer.concat([socket.buffer, data]);
 
     const totalHeaderLength = config.packet.totalLength + config.packet.typeLength;
@@ -32,7 +30,7 @@ export const onData = (socket) => async (data) => {
                     const timestamp = Ping.decode(packet)
 
                     const user = users.getUser({socket})
-                    if (!user) throw new CustomError(ErrorCodes.USER_NOT_FOUND, "User not found");
+                    if (!user) throw new CustomError(ErrorCodes.USER_NOT_FOUND, "핑 관리에서 유저 못찾음");
 
                     user.pong(timestamp)
                     break;
@@ -45,12 +43,8 @@ export const onData = (socket) => async (data) => {
                     await handler({socket, userId, payload })
                     break;
                 }
-                case PACKAGE_TYPE.LOCATION: {
-
-                    break;
-                }
                 default: {
-                    // 에러 때려박으셈
+                    throw new CustomError(ErrorCodes.UNKNOWN_PACKET_TYPE,"패킷 아이디 잘못됨")
                 }
             }
 

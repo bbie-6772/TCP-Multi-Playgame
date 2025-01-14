@@ -10,7 +10,7 @@ export const joinGameHandler = ({ socket, userId, payload }) => {
     const game = games.games.get(gameId);
 
     const user = users.getUser({userId});
-    if(!user) throw new CustomError(ErrorCodes.USER_NOT_FOUND,"User Not Found");
+    if(!user) throw new CustomError(ErrorCodes.USER_NOT_FOUND,"게임 참가에서 유저 못찾음");
 
     game.addUser(user)
 
@@ -19,6 +19,11 @@ export const joinGameHandler = ({ socket, userId, payload }) => {
     // socket.write()
 }
 
-export const startGame = () => {
+export const startGame = ({ socket, userId, payload }) => {
 
+}
+
+export const locationUpdate = ({ socket, userId, payload }) => {
+    const user = users.getUser({userId})
+    user.updatePosition(payload.x, payload.y)
 }

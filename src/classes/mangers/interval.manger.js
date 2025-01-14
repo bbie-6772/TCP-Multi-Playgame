@@ -3,7 +3,7 @@ class IntervalManager {
         this.intervals = new Map();
     }
 
-    addPlayer(playerId, callback, intervals, type = "user") {
+    addInterval(playerId, callback, intervals, type = "user") {
         if(!this.intervals.has(playerId)) {
             this.intervals.set(playerId, new Map());
         }
