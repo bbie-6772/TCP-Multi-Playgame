@@ -11,7 +11,7 @@ export const config = {
         version: CLIENT_VERSION
     },
     database: {
-        GAME_DB: {
+        USER_DB: {
             name: DB_NAME,
             user: DB_USER,
             password: DB_PASSWORD,
