@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
 
 const executeFile = async (pool, filePath) => {
-    const sql = fs.readFileSync(filePath);
+    const sql = fs.readFileSync(filePath, 'utf-8');
     const queries = sql.split(";")
     .map((query) => query.trim())
     .filter((q) => q.length > 0);

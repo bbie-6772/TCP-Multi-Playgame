@@ -1,3 +1,4 @@
+import { saveLocation } from "../../database/execute/users.js";
 import { games } from "../../session.js";
 import User from "./user.class.js";
 
@@ -12,9 +13,11 @@ class Users {
         const user = new User(deviceId, socket, latency)
         this.users.set(deviceId, user)
         this.socketToUser.set(socket, deviceId)
+
+        return user
     }
 
-    removeUser = ({ userId, socket }) => {
+    removeUser = async ({ userId, socket }) => {
         if (socket) {
             userId = this.socketToUser.get(socket)
             this.socketToUser.delete(socket)
@@ -22,6 +25,8 @@ class Users {
         // 참여한 게임이 있을 시 확인해서 삭제
         const user = this.users.get(userId)
         if (user.gameId) games.games.get(user.gameId).removeUser(userId)
+        // 마지막 위치 DB에 저장
+        await saveLocation(userId, user.x, user.y)
 
         this.users.delete(userId)
     }

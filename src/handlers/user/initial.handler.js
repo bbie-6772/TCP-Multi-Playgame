@@ -1,4 +1,5 @@
 import { config } from "../../config/config.js"
+import { createUser, findUser, updateLogin } from "../../database/execute/users.js"
 import { packetNames } from "../../protobuf/packetNames.js"
 import { users } from "../../session.js"
 import { createResponse } from "../../utils/response/createResponse.js"
@@ -7,12 +8,21 @@ import { joinGameHandler } from "../game/game.handler.js"
 export const initialHandler = async ({socket, payload}) => {
     const { deviceId: userId, latency} = payload
     // 세션에 유저 정보 확인
-    const user = users.getUser({userId})
+    let user = users.getUser({userId})
 
     // 존재 시 socket 을 바꿔줌
-    if(user) user.updateSocket(socket)
-    // 없을 시 추가
-    else users.addUser(userId, socket, latency)
+    if(user) {
+        user.updateSocket(socket);
+        await updateLogin(userId);
+    // 없을 시 DB 동기화 후 추가
+    } else {
+        const dbUser = await findUser(userId);
+        user = users.addUser(userId, socket, latency)
+        if (dbUser) {
+            user.updatePosition(dbUser.location_x, dbUser.location_y)
+            await updateLogin(userId);
+        } else await createUser(userId)
+    }
 
     const response = createResponse({
         handlerId: config.handler.id.INITIAL, 

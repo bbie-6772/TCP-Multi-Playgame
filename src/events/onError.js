@@ -1,6 +1,6 @@
 import { users } from "../session.js"
 
-export const onError = (socket) => (err) => {
+export const onError = (socket) => async (err) => {
     console.log("에러 발생")
-    users.removeUser({socket})
+    await users.removeUser({socket})
 }

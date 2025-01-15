@@ -21,6 +21,11 @@ class Game {
         this.intervals.removePlayer(userId)
     }
 
+    updateUser(user) {
+        this.intervals.removePlayer(user.id)
+        this.intervals.addInterval(user.id, user.ping, 200)
+    }
+
     startGame() {
         this.isStart = true;
 

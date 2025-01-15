@@ -25,8 +25,17 @@ class User {
     }
 
     updateSocket(socket) {
+        // 기존 접속 종료
+        this.socket.end()
+        // 새로운 접속 할당
         this.socket = socket;
         this.lastUpdateTime = Date.now();
+        // 게임에 접속 중이였을 때
+        if (this.gameId) {
+            const game = games.games.get(this.gameId)
+            // 게임의 Ping / Location Interval을 재할당
+            game.updateUser(this)
+        }
     }
 
     updateGame(gameId, playerId) {

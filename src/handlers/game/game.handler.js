@@ -25,5 +25,6 @@ export const startGame = ({ socket, userId, payload }) => {
 
 export const locationUpdate = ({ socket, userId, payload }) => {
     const user = users.getUser({userId})
-    user.updatePosition(payload.x, payload.y)
+    // 시작 지점이 아닐 경우에만
+    if(payload.x !== 0 && payload.y !== 0) user.updatePosition(payload.x, payload.y)
 }
