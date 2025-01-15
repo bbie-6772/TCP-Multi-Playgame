@@ -51,13 +51,6 @@ class User {
         this.latency = (now - timestamp) / 2;
     }
 
-    updateAllLocation = () => {
-        const game = games.games.get(this.gameId)
-        const payload = game.getAllLocation(this.playerId)
-
-        this.socket.write(createLocation(payload))
-    }
-
 }
 
 export default User

@@ -7,13 +7,13 @@ class Game {
         this.users = new Map();
         this.intervals = new IntervalManager()
         this.isStart = false;
+        this.intervals.addInterval(this.id, this.getAllLocation, 200)
     }
     
     addUser(user) {
         user.updateGame(this.id, this.users.size)
         this.users.set(user.id, user)
         this.intervals.addInterval(user.id, user.ping, 200)
-        this.intervals.addInterval(user.id, user.updateAllLocation, 200, "location")
     }
 
     removeUser(userId){
@@ -30,9 +30,10 @@ class Game {
         this.users.reduce((max, user) => user.latency > max ? user.latency : max )
     }
 
-    getAllLocation (playerId) {
+    getAllLocation = () => {
+        if(this.users.size <= 0) return
         // 게임 내 전체 유저 위치 확인
-        const payload = Array.from(this.users).map(([id, user]) => {
+        const locations = Array.from(this.users).map(([id, user]) => {
             {
                 return {
                     id: user.id,
@@ -42,7 +43,10 @@ class Game {
                 }
             }
         })
-        return { users: payload }
+        const packet = createLocation({ users: locations })
+
+        // 위치 정보 동기화
+        this.users.forEach((user) => user.socket.write(packet))
     }
 }
 
