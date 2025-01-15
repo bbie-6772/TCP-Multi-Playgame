@@ -17,6 +17,11 @@ class Users {
         return user
     }
 
+    updateSocket = (id, preSocket, newSocket) => {
+        this.socketToUser.delete(preSocket)
+        this.socketToUser.set(newSocket, id)
+    }
+
     removeUser = async ({ userId, socket }) => {
         if (socket) {
             userId = this.socketToUser.get(socket)
@@ -24,10 +29,11 @@ class Users {
         }
         // 참여한 게임이 있을 시 확인해서 삭제
         const user = this.users.get(userId)
+        // user를 찾을 수 없으면 종료
+        if (!user) return
         if (user.gameId) games.games.get(user.gameId).removeUser(userId)
         // 마지막 위치 DB에 저장
         await saveLocation(userId, user.x, user.y)
-
         this.users.delete(userId)
     }
 

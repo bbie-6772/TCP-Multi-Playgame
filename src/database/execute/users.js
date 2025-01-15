@@ -15,7 +15,6 @@ export const saveLocation = async (id, x, y) => {
 
 export const findUser = async (id) => {
     const [rows] = await pools.USER_DB.query(USERS_QUERIES.FIND_USER, [id])
-    console.log(rows[0])
     return rows[0]
 }
 

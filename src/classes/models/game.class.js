@@ -1,5 +1,6 @@
 import { v4 as uuid4} from 'uuid'
 import IntervalManager from '../mangers/interval.manger.js';
+import { createLocation } from '../../utils/notification/createNotification.js';
 
 class Game {
     constructor() {
@@ -7,13 +8,15 @@ class Game {
         this.users = new Map();
         this.intervals = new IntervalManager()
         this.isStart = false;
-        this.intervals.addInterval(this.id, this.getAllLocation, 200)
+        // 0.2s 당 위치 동기화 추가
+        this.intervals.addInterval(this.id, this.notificationLocation, 200)
     }
     
     addUser(user) {
         user.updateGame(this.id, this.users.size)
         this.users.set(user.id, user)
         this.intervals.addInterval(user.id, user.ping, 200)
+        user.socket.write(this.getAllLocation())
     }
 
     removeUser(userId){
@@ -22,26 +25,26 @@ class Game {
     }
 
     updateUser(user) {
-        this.intervals.removePlayer(user.id)
+        this.intervals.removeInterval(user.id)
         this.intervals.addInterval(user.id, user.ping, 200)
+        user.socket.write(this.getAllLocation())
     }
 
     startGame() {
         this.isStart = true;
-
     }
 
     getMaxLatency() {
         this.users.reduce((max, user) => user.latency > max ? user.latency : max )
     }
 
-    getAllLocation = () => {
+    getAllLocation() {
         if(this.users.size <= 0) return
         // 게임 내 전체 유저 위치 확인
         const locations = Array.from(this.users).map(([id, user]) => {
             {
                 return {
-                    id: user.id,
+                    id,
                     playerId: user.playerId,
                     x: user.x,
                     y: user.y,
@@ -50,8 +53,11 @@ class Game {
         })
         const packet = createLocation({ users: locations })
 
-        // 위치 정보 동기화
-        this.users.forEach((user) => user.socket.write(packet))
+        return packet
+    }
+
+    notificationLocation = () => {
+        this.users.forEach((user) => user.socket.write(this.getAllLocation()))
     }
 }
 

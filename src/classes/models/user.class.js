@@ -1,5 +1,5 @@
-import { games } from "../../session.js";
-import { createLocation, createPing } from "../../utils/notification/createNotification.js";
+import { games, users } from "../../session.js";
+import { createPing } from "../../utils/notification/createNotification.js";
 
 class User {
     constructor(id, socket, latency) {
@@ -28,6 +28,7 @@ class User {
         // 기존 접속 종료
         this.socket.end()
         // 새로운 접속 할당
+        users.updateSocket(this.id, this.socket, socket)
         this.socket = socket;
         this.lastUpdateTime = Date.now();
         // 게임에 접속 중이였을 때
