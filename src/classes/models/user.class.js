@@ -53,9 +53,9 @@ class User {
     }
 
     // 추측항법 시 사용
-    calculatePosition(latency, intervalTime) {
-        // 최대 지연시간을 이용해 계산 (밀리초 단위)
-        const timeDiff = latency / intervalTime
+    calculatePosition() {
+        // 지연시간을 이용해 계산 (밀리초 단위)
+        const timeDiff = this.latency / 1000
 
         const nextX = this.x + this.speed * Math.cos(this.direct) * timeDiff
         const nextY = this.y + this.speed * Math.sin(this.direct) * timeDiff

@@ -10,14 +10,14 @@ class Game {
         this.users = new Map();
         this.intervals = new IntervalManager()
         this.isStart = false;
-        // 0.2s 당 위치 동기화 추가
-        this.intervals.addInterval(this.id, this.notificationLocation, LOCATION_SYNC_TIME)
+        this.intervals.addInterval(this.id,this.notificationLocation,LOCATION_SYNC_TIME)
     }
     
     addUser(user) {
         user.updateGame(this.id, this.users.size)
         this.users.set(user.id, user)
-        this.intervals.addInterval(user.id, user.ping, 200)
+        this.intervals.addInterval(user.id, user.ping, 1000)
+        if (!this.isStart) this.startGame();
     }
 
     removeUser(userId){
@@ -27,7 +27,7 @@ class Game {
 
     updateUser(user) {
         this.intervals.removeInterval(user.id)
-        this.intervals.addInterval(user.id, user.ping, 200)
+        this.intervals.addInterval(user.id, user.ping, 1000)
         user.socket.write(this.getAllLocation())
     }
 
@@ -40,7 +40,7 @@ class Game {
         return maxLatency
     }
 
-    getAllLocation() {
+    getAllLocation(latency) {
         if(this.users.size <= 0) return
         // 게임 내 전체 유저 위치 확인
         const locations = Array.from(this.users).map(([id, user]) => {
@@ -48,7 +48,7 @@ class Game {
                 return {
                     id,
                     playerId: user.playerId,
-                    ...user.calculatePosition(this.getMaxLatency(), LOCATION_SYNC_TIME)
+                    ...user.calculatePosition(latency)
                 }
             }
         })
@@ -58,7 +58,7 @@ class Game {
     }
 
     notificationLocation = () => {
-        this.users.forEach((user) => user.socket.write(this.getAllLocation()))
+        this.users.forEach((user) => user.socket.write(this.getAllLocation(latency)))
     }
 }
 
