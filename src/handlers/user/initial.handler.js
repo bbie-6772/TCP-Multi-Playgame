@@ -6,7 +6,9 @@ import { createResponse } from "../../utils/response/createResponse.js"
 import { joinGameHandler } from "../game/game.handler.js"
 
 export const initialHandler = async ({socket, payload}) => {
-    const { deviceId: userId, latency} = payload
+
+    console.log(payload)
+    const { deviceId: userId, latency, speed} = payload
     // 세션에 유저 정보 확인
     let user = users.getUser({userId})
 
@@ -17,7 +19,7 @@ export const initialHandler = async ({socket, payload}) => {
     // 없을 시 DB 동기화 후 추가
     } else {
         const dbUser = await findUser(userId);
-        user = users.addUser(userId, socket, latency)
+        user = users.addUser(userId, socket, latency, speed)
         if (dbUser) {
             user.updatePosition(dbUser.location_x, dbUser.location_y)
             await updateLogin(userId);
@@ -29,8 +31,8 @@ export const initialHandler = async ({socket, payload}) => {
         responseCode: config.handler.responseCode, 
         data: {
             userId,
-            x: 0,
-            y: 0
+            x: user.x,
+            y: user.y
         }, 
         protoType: packetNames.initialResponse.Packet,
         userId

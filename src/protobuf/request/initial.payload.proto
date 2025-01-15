@@ -6,4 +6,5 @@ message Packet {
     string deviceId = 1;
     uint32 playerId = 2;
     float latency = 3;
+    float speed = 4;
 }

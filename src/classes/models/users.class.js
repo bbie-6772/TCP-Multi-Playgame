@@ -9,8 +9,8 @@ class Users {
         this.socketToUser = new Map();
     }
 
-    addUser = (deviceId, socket, latency) => {
-        const user = new User(deviceId, socket, latency)
+    addUser = (deviceId, socket, latency, speed) => {
+        const user = new User(deviceId, socket, latency, speed)
         this.users.set(deviceId, user)
         this.socketToUser.set(socket, deviceId)
 

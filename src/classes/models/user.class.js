@@ -2,12 +2,14 @@ import { games, users } from "../../session.js";
 import { createPing } from "../../utils/notification/createNotification.js";
 
 class User {
-    constructor(id, socket, latency) {
+    constructor(id, socket, latency, speed) {
         this.id = id;
         this.socket = socket;
         this.x = 0;
         this.y = 0;
+        this.direct = 0;
         this.latency = latency;
+        this.speed = speed;
         this.sequence = 0;
         this.lastUpdateTime = Date.now();
         this.gameId = null;
@@ -19,6 +21,8 @@ class User {
     }
 
     updatePosition(x, y) {
+        //아크 탄젠트(atan2)로 360도 범위의 방향을 얻음
+        this.direct = Math.atan2(y - this.y,x - this.x);
         this.x = x;
         this.y = y;
         this.lastUpdateTime = Date.now();
@@ -26,7 +30,7 @@ class User {
 
     updateSocket(socket) {
         // 기존 접속 종료
-        this.socket.end()
+        this.socket.destroy()
         // 새로운 접속 할당
         users.updateSocket(this.id, this.socket, socket)
         this.socket = socket;
@@ -39,14 +43,24 @@ class User {
         }
     }
 
+    updateSpeed(speed) {
+        if(speed >= 0) this.speed = speed
+    }
+
     updateGame(gameId, playerId) {
         this.gameId = gameId;
         this.playerId = playerId;
     }
 
     // 추측항법 시 사용
-    calculatePosition(latency) {
-        const timeDiff = latency /1000;
+    calculatePosition(latency, intervalTime) {
+        // 최대 지연시간을 이용해 계산 (밀리초 단위)
+        const timeDiff = latency / intervalTime
+
+        const nextX = this.x + this.speed * Math.cos(this.direct) * timeDiff
+        const nextY = this.y + this.speed * Math.sin(this.direct) * timeDiff
+
+        return {x: nextX, y:nextY }
     }
 
     ping = () => {

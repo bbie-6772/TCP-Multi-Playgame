@@ -2,6 +2,8 @@ import { v4 as uuid4} from 'uuid'
 import IntervalManager from '../mangers/interval.manger.js';
 import { createLocation } from '../../utils/notification/createNotification.js';
 
+const LOCATION_SYNC_TIME = 200;
+
 class Game {
     constructor() {
         this.id = uuid4();
@@ -9,14 +11,13 @@ class Game {
         this.intervals = new IntervalManager()
         this.isStart = false;
         // 0.2s 당 위치 동기화 추가
-        this.intervals.addInterval(this.id, this.notificationLocation, 200)
+        this.intervals.addInterval(this.id, this.notificationLocation, LOCATION_SYNC_TIME)
     }
     
     addUser(user) {
         user.updateGame(this.id, this.users.size)
         this.users.set(user.id, user)
         this.intervals.addInterval(user.id, user.ping, 200)
-        user.socket.write(this.getAllLocation())
     }
 
     removeUser(userId){
@@ -35,7 +36,8 @@ class Game {
     }
 
     getMaxLatency() {
-        this.users.reduce((max, user) => user.latency > max ? user.latency : max )
+        const maxLatency = Array.from(this.users).reduce((max, [id, user]) => user.latency > max ? user.latency : max,0)
+        return maxLatency
     }
 
     getAllLocation() {
@@ -46,8 +48,7 @@ class Game {
                 return {
                     id,
                     playerId: user.playerId,
-                    x: user.x,
-                    y: user.y,
+                    ...user.calculatePosition(this.getMaxLatency(), LOCATION_SYNC_TIME)
                 }
             }
         })

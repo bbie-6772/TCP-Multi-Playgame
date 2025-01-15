@@ -24,6 +24,6 @@ export const startGame = ({ socket, userId, payload }) => {
 }
 
 export const locationUpdate = ({ socket, userId, payload }) => {
-    const user = users.getUser({userId})r
+    const user = users.getUser({userId})
     user.updatePosition(payload.x, payload.y)
 }
