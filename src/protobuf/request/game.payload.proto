@@ -14,4 +14,10 @@ message JoinGame {
 message LocationUpdate {
     float x = 1;
     float y = 2;
+    int64 timestamp = 3;
+}
+
+message DirectionUpdate {
+    uint32 directions = 1;
+    int64 timestamp = 2;
 }

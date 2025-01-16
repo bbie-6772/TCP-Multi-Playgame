@@ -25,5 +25,14 @@ export const startGame = ({ socket, userId, payload }) => {
 
 export const locationUpdate = ({ socket, userId, payload }) => {
     const user = users.getUser({userId})
-    user.updatePosition(payload.x, payload.y)
+    // 위치 업데이트 
+    user.updatePosition(payload)
+    // 유저에게 값 반환
+
+}
+
+export const directionUpdate = ({ socket, userId, payload }) => {
+    const user = users.getUser({ userId })
+    // 방향 업데이트 
+    user.updateDirection(payload)
 }

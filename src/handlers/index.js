@@ -2,7 +2,7 @@ import { config } from "../config/config.js";
 import { packetNames } from "../protobuf/packetNames.js";
 import CustomError from "../utils/error/customError.js";
 import { ErrorCodes } from "../utils/error/errorCodes.js";
-import { locationUpdate } from "./game/game.handler.js";
+import { locationUpdate, directionUpdate } from "./game/game.handler.js";
 import { initialHandler } from "./user/initial.handler.js";
 
 export const handlers = {
@@ -13,6 +13,10 @@ export const handlers = {
     [config.handler.id.LOCATION_UPDATE]: {
         handler: locationUpdate,
         protoType: packetNames.gamePayload.LocationUpdate
+    },
+    [config.handler.id.DIRECT_UPDATE]: {
+        handler: directionUpdate,
+        protoType: packetNames.gamePayload.DirectionUpdate
     }
 }
 

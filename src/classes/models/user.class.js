@@ -7,7 +7,9 @@ class User {
         this.socket = socket;
         this.x = 0;
         this.y = 0;
-        this.direct = 0;
+        this.directX = 0;
+        this.directY = 0;
+        this.timestamp = null;
         this.latency = latency;
         this.speed = speed;
         this.sequence = 0;
@@ -20,11 +22,42 @@ class User {
         return ++this.sequence;
     }
 
-    updatePosition(x, y) {
-        //아크 탄젠트(atan2)로 360도 범위의 방향을 얻음
-        this.direct = Math.atan2(y - this.y,x - this.x);
-        this.x = x;
-        this.y = y;
+    updateDirection({ directions, timestamp }) {
+        const decode = {
+            // 1 byte 에 0(위) 0(아래) 0(왼쪽) 0(오른쪽) 형식으로 입력키를 받음
+            up: directions & 1 ? 1 : 0,
+            down: directions & 2 ? 1 : 0,
+            left: directions & 4 ? 1 : 0,
+            right: directions & 8 ? 1 : 0
+        }
+
+        const axisX = decode.right - decode.left
+        const axisY = decode.up - decode.down
+        const vectorSize = Math.sqrt((axisX ** 2) + (axisY ** 2))
+
+        this.directX = vectorSize > 0 ? axisX / vectorSize : 0
+        this.directY = vectorSize > 0 ? axisY / vectorSize : 0
+        this.timestamp = timestamp
+    }
+
+    updatePosition({ x, y, timestamp }) {
+        const game = games.games.get(this.gameId)
+        // 입력도 가장 높은 지연시간을 만족하여야 입력되도록
+        if (Date.now() - timestamp < game.getMaxLatency()) return this.updatePosition({ x, y, timestamp })
+
+        // 시간 간격 확인
+        const timeDiff = (timestamp - this.timestamp) / 1000
+        // 이전에 계산해둔 방향을 토대로 현재 위치 계산
+        const nextX = this.x + this.speed * this.directX * timeDiff
+        const nextY = this.y + this.speed * this.directY * timeDiff
+
+        // 오차범위 10% 로 적합 시 위치 적용
+        if (Math.abs(nextX - x) <= Math.abs(x * 0.1)) this.x = x;
+        if (Math.abs(nextY - y) <= Math.abs(y * 0.1)) this.y = y;
+
+        console.log("계산", nextX, nextY, "진짜",x, y)
+        console.log("현재위치", this.x, this.y, timeDiff,"초")
+        this.timestamp = timestamp
         this.lastUpdateTime = Date.now();
     }
 
@@ -52,13 +85,17 @@ class User {
         this.playerId = playerId;
     }
 
-    // 추측항법 시 사용
-    calculatePosition() {
-        // 지연시간을 이용해 계산 (밀리초 단위)
-        const timeDiff = this.latency / 1000
+    // 추측항법
+    calculatePosition(intervalTime, maxLatency) {
+        // 경과시간 + 지연시간을 이용해 계산 (초 단위)
+        const timeDiff = (intervalTime + maxLatency) / 1000
 
-        const nextX = this.x + this.speed * Math.cos(this.direct) * timeDiff
-        const nextY = this.y + this.speed * Math.sin(this.direct) * timeDiff
+        const nextX = this.x + this.speed * this.directX * timeDiff
+        const nextY = this.y + this.speed * this.directY * timeDiff
+
+        // 추측항법 적용
+        this.x = nextX
+        this.y = nextY
 
         return {x: nextX, y:nextY }
     }

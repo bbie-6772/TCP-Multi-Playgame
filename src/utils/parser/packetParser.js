@@ -9,13 +9,11 @@ export const packetParser = (data) => {
     const Packet = protoMessages.common.Packet;
     let Payload;
     let packet;
-
     try {
         packet = Packet.decode(data);
-
         const [namespace, typeName] = getProtoTypeById(packet.handlerId).split('.')
         Payload = protoMessages[namespace][typeName]
-        
+
         packet.payload = Payload.decode(packet.payload)
     } catch (e) {
         throw new CustomError(ErrorCodes.PACKET_DECODE_ERROR,"Packet Decode Error")
