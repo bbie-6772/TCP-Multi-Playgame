@@ -14,6 +14,8 @@ class User {
         this.speed = speed;
         this.sequence = 0;
         this.lastUpdateTime = Date.now();
+        this.eventEmitter = new EventEmitter();
+        this.setupEventListeners();  
         this.gameId = null;
         this.playerId = null;
     }      
@@ -22,7 +24,14 @@ class User {
         return ++this.sequence;
     }
 
+    
+
+
     updateDirection({ directions, timestamp }) {
+        const game = games.games.get(this.gameId)
+        // 게임 진입 실패 시 무시
+        if (!game) return
+
         const decode = {
             // 1 byte 에 0(위) 0(아래) 0(왼쪽) 0(오른쪽) 형식으로 입력키를 받음
             up: directions & 1 ? 1 : 0,
@@ -44,8 +53,6 @@ class User {
         const game = games.games.get(this.gameId)
         // 게임 진입 실패 시 무시
         if(!game) return
-        // 가장 높은 지연시간을 만족하여야 위치 업데이트 가능
-        if (Date.now() - timestamp < game.getMaxLatency()) return 
 
         // 시간 간격 확인
         const timeDiff = (timestamp - this.timestamp) / 1000
