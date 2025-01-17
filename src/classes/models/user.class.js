@@ -14,8 +14,6 @@ class User {
         this.speed = speed;
         this.sequence = 0;
         this.lastUpdateTime = Date.now();
-        this.eventEmitter = new EventEmitter();
-        this.setupEventListeners();  
         this.gameId = null;
         this.playerId = null;
     }      
@@ -23,9 +21,6 @@ class User {
     getNextSequence() {
         return ++this.sequence;
     }
-
-    
-
 
     updateDirection({ directions, timestamp }) {
         const game = games.games.get(this.gameId)
