@@ -42,8 +42,10 @@ class User {
 
     updatePosition({ x, y, timestamp }) {
         const game = games.games.get(this.gameId)
-        // 입력도 가장 높은 지연시간을 만족하여야 입력되도록
-        if (Date.now() - timestamp < game.getMaxLatency()) return this.updatePosition({ x, y, timestamp })
+        // 게임 진입 실패 시 무시
+        if(!game) return
+        // 가장 높은 지연시간을 만족하여야 위치 업데이트 가능
+        if (Date.now() - timestamp < game.getMaxLatency()) return 
 
         // 시간 간격 확인
         const timeDiff = (timestamp - this.timestamp) / 1000
@@ -51,12 +53,14 @@ class User {
         const nextX = this.x + this.speed * this.directX * timeDiff
         const nextY = this.y + this.speed * this.directY * timeDiff
 
-        // 오차범위 10% 로 적합 시 위치 적용
-        if (Math.abs(nextX - x) <= Math.abs(x * 0.1)) this.x = x;
-        if (Math.abs(nextY - y) <= Math.abs(y * 0.1)) this.y = y;
+        // 오차범위 5% 로 적합 시에만 받아온 위치 적용
+        if (Math.abs(nextX - x) <= Math.abs(x * 0.05)) this.x = x;
+        else this.x = nextX
+        if (Math.abs(nextY - y) <= Math.abs(y * 0.05)) this.y = y;
+        else this.y = nextY
 
-        console.log("계산", nextX, nextY, "진짜",x, y)
-        console.log("현재위치", this.x, this.y, timeDiff,"초")
+        // console.log("계산", nextX, nextY, "진짜",x, y)
+        // console.log("현재위치", this.x, this.y, timeDiff,"초")
         this.timestamp = timestamp
         this.lastUpdateTime = Date.now();
     }
@@ -76,13 +80,13 @@ class User {
         }
     }
 
-    updateSpeed(speed) {
-        if(speed >= 0) this.speed = speed
-    }
-
     updateGame(gameId, playerId) {
         this.gameId = gameId;
         this.playerId = playerId;
+    }
+
+    updateSpeed(speed) {
+        if(speed >= 0) this.speed = speed
     }
 
     // 추측항법
@@ -92,10 +96,6 @@ class User {
 
         const nextX = this.x + this.speed * this.directX * timeDiff
         const nextY = this.y + this.speed * this.directY * timeDiff
-
-        // 추측항법 적용
-        this.x = nextX
-        this.y = nextY
 
         return {x: nextX, y:nextY }
     }
