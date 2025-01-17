@@ -13,7 +13,7 @@ export const initialHandler = async ({socket, payload}) => {
     let user = users.getUser({userId})
 
     // 존재 시 socket 을 바꿔줌
-    if(user) {
+    if (user) {
         user.updateSocket(socket);
         await updateLogin(userId);
     // 없을 시 DB 동기화 후 추가
