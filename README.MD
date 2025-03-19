@@ -1,7 +1,6 @@
 # TCP MultiPlay Server
 
 - Node.js 와 TCP 연결을 이용해 멀티플레이가 가능한 서버를 구현하였습니다!
-- 이 서버 전용 클라이언트는 [Repository](https://github.com/bbie-6772/node5_unity_sample) 에 존재합니다
 
 ## 서버의 목적
 
